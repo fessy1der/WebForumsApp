@@ -12,25 +12,36 @@ namespace WebForumsApp.Service
     public class ForumService : IForum
     {
         private readonly ApplicationDbContext _db;
+        private readonly IPost _postService;
 
         public ForumService(ApplicationDbContext db)
         {
             _db = db;
         }
 
-        public Task Create(Forum forum)
+        public async Task Create(Forum forum)
         {
-            throw new NotImplementedException();
+            _db.Add(forum);
+            await _db.SaveChangesAsync();
         }
 
-        public Task Delete(int forumId)
+        public async Task Delete(int forumId)
         {
-            throw new NotImplementedException();
+            var forum = GetById(forumId);
+            _db.Remove(forum);
+            await _db.SaveChangesAsync();
         }
 
-        public IEnumerable<ApplicationUser> GetActiveUsers()
+        public IEnumerable<ApplicationUser> GetActiveUsers(int forumId)
         {
-            throw new NotImplementedException();
+            var posts = GetById(forumId).Posts;
+
+            if (posts == null || !posts.Any())
+            {
+                return new List<ApplicationUser>();
+            }
+
+            return _postService.GetAllUsers(posts);
         }
 
         public IEnumerable<Forum> GetAll()
@@ -47,14 +58,70 @@ namespace WebForumsApp.Service
             return forum;
         }
 
-        public Task UpdateDescription(int id, string newDescription)
+        public async Task UpdateDescription(int id, string newDescription)
         {
-            throw new NotImplementedException();
+            var forum = GetById(id);
+            forum.Description = newDescription;
+
+            _db.Update(forum);
+            await _db.SaveChangesAsync();
         }
 
-        public Task UpdateTitle(int id, string newTitle)
+        public async Task UpdateTitle(int id, string newTitle)
         {
-            throw new NotImplementedException();
+            var forum = GetById(id);
+            forum.Title = newTitle;
+
+            _db.Update(forum);
+            await _db.SaveChangesAsync();
         }
+
+        public IEnumerable<Post> GetFilteredPosts(string searchQuery)
+        {
+            return _postService.GetFilteredPosts(searchQuery);
+        }
+
+        public IEnumerable<Post> GetFilteredPosts(int forumId, string searchQuery)
+        {
+            if (forumId == 0) return _postService.GetFilteredPosts(searchQuery);
+
+            var forum = GetById(forumId);
+
+            return string.IsNullOrEmpty(searchQuery)
+                ? forum.Posts
+                : forum.Posts.Where(post
+                    => post.Title.Contains(searchQuery) || post.Content.Contains(searchQuery));
+        }
+
+        public async Task SetForumImage(int id, Uri uri)
+        {
+            var forum = GetById(id);
+            forum.Image = uri.AbsoluteUri;
+            _db.Update(forum);
+            await _db.SaveChangesAsync();
+        }
+
+        public Post GetLatestPost(int forumId)
+        {
+            var posts = GetById(forumId).Posts;
+
+            if (posts != null)
+            {
+                return GetById(forumId).Posts
+                    .OrderByDescending(post => post.DateCreated)
+                    .FirstOrDefault();
+            }
+
+            return new Post();
+        }
+
+        public bool HasRecentPost(int id)
+        {
+            const int hoursAgo = 12;
+            var window = DateTime.Now.AddHours(-hoursAgo);
+            return GetById(id).Posts.Any(post => post.DateCreated >= window);
+        }
+
+
     }
 }
