@@ -12,6 +12,8 @@ using WebForumsApp.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebForumsApp.Data.Interfaces;
+using WebForumsApp.Service;
 
 namespace WebForumsApp
 {
@@ -33,6 +35,7 @@ namespace WebForumsApp
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddScoped<IForum, ForumService>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
