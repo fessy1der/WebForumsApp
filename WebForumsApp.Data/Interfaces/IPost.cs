@@ -23,7 +23,7 @@ namespace WebForumsApp.Data.Interfaces
         IEnumerable<Post> GetPostsBetween(DateTime start, DateTime end);
         IEnumerable<Post> GetFilteredPosts(string searchQuery);
         IEnumerable<ApplicationUser> GetAllUsers(IEnumerable<Post> posts);
-        IEnumerable<Post> GetLatestPosts(int forumId);
+        IEnumerable<Post> GetLatestPosts(int count);
         string GetForumImageUrl(int id);
     }
 }
