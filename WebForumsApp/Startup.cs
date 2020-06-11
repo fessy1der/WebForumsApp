@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebForumsApp.Data.Interfaces;
 using WebForumsApp.Service;
+using WebForumsApp.Utility;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace WebForumsApp
 {
@@ -36,6 +38,12 @@ namespace WebForumsApp
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddScoped<IForum, ForumService>();
+            services.AddScoped<IPost, PostService>();
+            services.AddScoped<IReply, ReplyService>();
+            services.AddScoped<IApplicationUser, ApplicationUserService>();
+            services.AddScoped<IPostFormater, PostFormater>();
+            services.AddScoped<IUpload, UploadService>();
+            services.AddTransient<IEmailSender, EmailSender>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
