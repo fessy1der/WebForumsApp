@@ -12,5 +12,6 @@ namespace WebForumsApp.Data
         public virtual ApplicationUser User { get; set; }
         public virtual Forum Forum { get; set; }
         public virtual IEnumerable<Reply> Replies{ get; set; }
+        public bool IsArchived { get; set; }
     }
 }

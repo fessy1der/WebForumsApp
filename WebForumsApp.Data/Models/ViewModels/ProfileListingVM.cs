@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WebForumsApp.Data.Models.ViewModels
 {
-    class ProfileListingVM
+    public class ProfileListingVM
     {
         public IEnumerable<ProfileVM> Profiles { get; set; }
     }
